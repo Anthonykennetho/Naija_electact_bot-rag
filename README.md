@@ -62,11 +62,8 @@ Getting a `TELEGRAM_BOT_TOKEN`: message **@BotFather** on Telegram, send
 
 ### Enabling full LLM-generated answers (Groq — hosted, fastest, no local compute)
 
-By default the bot uses **Groq**, which runs fully open-source models
-(Llama 3.1/3.3) on inference hardware built specifically for low latency —
-typically a few hundred milliseconds per response. It's a plain HTTP API
-call, so it puts **zero load on your laptop** — safe for any machine,
-unlike running a model locally.
+By default the bot uses **Groq** with the model configured in `GROQ_MODEL`.
+Inference runs remotely, so the deployment does not need a local model.
 
 ```bash
 # 1. Create a free account and API key: https://console.groq.com/keys
@@ -132,6 +129,53 @@ heading forms, plus numbered provisions such as `1.—(1)` in Nigerian Acts.
 
 To change the active bill, rerun ingestion before restarting the bot. Only one
 Telegram polling process should run for the configured bot token.
+
+## Limitations and mitigations
+
+- **Lexical retrieval**: TF-IDF can miss questions that use very different
+  words from the bill. Add real citizen questions to `eval_retrieval.py`, use
+  the section-title/query expansions in `src/retriever.py`, and move to a
+  hybrid keyword plus embedding/vector search when the corpus grows.
+- **PDF extraction**: selectable text can still contain broken headings or
+  reading order. Inspect the indexed chunk count and sample citations after
+  every ingestion; run OCR first for scanned documents.
+- **Grounding**: answers are restricted to retrieved excerpts and cite Parts
+  and Sections, but this is an information tool, not legal advice. Review
+  high-risk answers against the official source and show the source URL to
+  users in a production UI.
+- **Corpus scope**: one shared index represents one active bill. Re-ingest the
+  intended source before restarting, or add a document identifier/filter when
+  supporting multiple laws.
+- **Polling availability**: Telegram polling requires exactly one worker for a
+  bot token. Do not run local and hosted workers at the same time; duplicate
+  workers cause Telegram `409 Conflict` errors.
+
+## Deploying for public use
+
+The bot is a Telegram polling worker, not a web server. Deploy it as a
+background worker on Railway, Render, Fly.io, or another host that keeps one
+long-running process alive.
+
+1. Revoke the Telegram and Groq credentials that have appeared in local files
+  or terminal output, then create replacements. Never commit `.env`.
+2. Push the code and the official source PDF to GitHub. The repository ignores
+  `.env`, virtual environments, and generated indexes.
+3. Create a **worker/background service** from the GitHub repository.
+4. Set these service variables in the host dashboard:
+  `TELEGRAM_BOT_TOKEN`, `LLM_BACKEND=groq`, `GROQ_API_KEY`, and
+  `GROQ_MODEL=groq/compound-mini`.
+5. Use the repository `Procfile`, which runs `bash start.sh`. `start.sh`
+  rebuilds the index from `data/electoral_act_2026.pdf` before starting the
+  bot, so the deployed index matches the checked-in source.
+6. Read the worker logs. A healthy startup shows `Application started` and
+  repeated successful `getUpdates` calls. A `409 Conflict` means another
+  worker is polling the same bot token.
+7. Message the bot with `/start`, `/help`, and three bill-specific questions.
+  Keep a small evaluation set for every new bill before public launch.
+
+For Railway, select **Deploy from GitHub**, choose this repository, configure
+the variables above, and deploy it as a worker. Do not create multiple worker
+replicas for the same Telegram token.
 
 ## Porting to WhatsApp
 
