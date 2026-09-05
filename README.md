@@ -21,6 +21,7 @@ pip install -r requirements.txt
 cp .env.example .env        # fill in TELEGRAM_BOT_TOKEN at minimum
 
 python ingest.py data/electoral_act_2026.pdf "Electoral Act, 2026"
+python eval_retrieval.py
 python bot.py               # starts polling — message the bot on Telegram
 ```
 
@@ -28,6 +29,7 @@ On Windows PowerShell, use the project interpreter:
 
 ```powershell
 .\venv\Scripts\python.exe ingest.py data\electoral_act_2026.pdf "Electoral Act, 2026"
+.\venv\Scripts\python.exe eval_retrieval.py
 .\venv\Scripts\python.exe bot.py
 ```
 
@@ -35,7 +37,7 @@ To ingest a real bill, provide a plain-text file or a PDF with selectable text:
 
 ```bash
 python ingest.py data/plateau_education_bill.pdf "Plateau Education Bill 2026"
-python eval_retrieval.py
+python eval_retrieval.py data/plateau_education_bill.pdf "Plateau Education Bill 2026"
 python bot.py
 ```
 
@@ -44,6 +46,10 @@ keeps distinct Sections in the answer context, which helps cross-cutting questio
 such as decentralisation combine provisions about the Board, funding, local
 implementation, and accountability. Scanned/image-only PDFs need OCR first;
 `pypdf` extracts selectable text but does not perform OCR.
+
+`eval_retrieval.py` defaults to the official Electoral Act and tests ordinary
+English plus Hausa retrieval questions. Pass a bill path and title to evaluate
+another source; add or adjust its cases in the evaluator before deployment.
 
 For a Nigerian Act such as the Electoral Act, 2026, the parser also accepts
 numbered provisions such as `1.—(1)` and headings written as `PART I — ...`.
