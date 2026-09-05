@@ -125,10 +125,14 @@ heading forms, plus numbered provisions such as `1.—(1)` in Nigerian Acts.
   TF-IDF plus heading relevance, and keeps distinct Sections in context.
 5. **Answer**: `llm.py` generates a short grounded explanation with citations;
   it falls back to an extractive response if the LLM is unavailable.
-6. **Deliver**: `bot.py` handles `/start`, `/help`, and Telegram questions.
+6. **Deliver**: `bot.py` handles `/start`, `/help`, `/topics`, and Telegram questions.
 
 To change the active bill, rerun ingestion before restarting the bot. Only one
 Telegram polling process should run for the configured bot token.
+
+Users can send `/topics` in Telegram for example searches. Follow-up questions
+should repeat the topic or Section number because the current bot does not retain
+conversation history between messages.
 
 ## Limitations and mitigations
 

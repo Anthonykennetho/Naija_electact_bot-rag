@@ -36,7 +36,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• How are election results transmitted?\n"
         "• What happens if someone votes more than once?\n\n"
         "Commands:\n"
-        "/help - see how to ask questions"
+        "/help - see how to ask questions\n"
+        "/topics - see example topics you can search"
     )
 
 
@@ -50,8 +51,32 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• What documents do I need to register?\n"
         "• What is the penalty for double registration?\n"
         "• Who supervises Area Council elections?\n\n"
-        "Use /start to see the welcome message. This bot provides information "
+        "Use /topics for more examples. Use /start to see the welcome message. "
+        "This bot provides information "
         "from the loaded law, not personal legal advice."
+    )
+
+
+async def topics_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "You can ask about:\n\n"
+        "Voter registration\n"
+        "• What documents do I need to register to vote?\n"
+        "• Who is qualified to register?\n"
+        "• Can I transfer my voter registration?\n\n"
+        "Voting and results\n"
+        "• How are election results transmitted?\n"
+        "• Where can I vote?\n"
+        "• What happens if there is an emergency during an election?\n\n"
+        "Offences and penalties\n"
+        "• What is the penalty for double registration?\n"
+        "• What is the penalty for bribery?\n"
+        "• What happens if someone uses another person's voter card?\n\n"
+        "Area Council elections\n"
+        "• Who supervises Area Council elections?\n"
+        "• How is an Area Council Chairman elected?\n"
+        "• How can an Area Council member be recalled?\n\n"
+        "Tip: include the topic or Section number in follow-up questions."
     )
 
 
@@ -95,6 +120,7 @@ def main():
     app = Application.builder().token(token).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("topics", topics_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question))
     app.add_error_handler(error_handler)
 
