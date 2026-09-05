@@ -1,0 +1,53 @@
+TITLE: Plateau State Basic Education (Amendment) Bill, 2026
+NOTE: This is a SYNTHETIC sample bill created for demonstration and testing purposes only.
+Replace this file with real, ingested State Assembly data before production use.
+
+PART I - PRELIMINARY
+
+Section 1 - Short Title
+This Bill may be cited as the Plateau State Basic Education (Amendment) Bill, 2026.
+
+Section 2 - Commencement
+This Bill shall come into force on the date of its signing into law by the Governor.
+
+Section 3 - Interpretation
+In this Bill, unless the context otherwise requires:
+"Basic Education" means education provided to children from primary one through junior secondary three.
+"Board" means the Plateau State Universal Basic Education Board.
+"Ministry" means the Ministry of Education of Plateau State.
+
+PART II - ADMINISTRATION
+
+Section 4 - Establishment of the Board
+(1) There is established for the State a body to be known as the Plateau State Universal Basic Education Board.
+(2) The Board shall be responsible for the implementation of basic education policy across the State.
+
+Section 5 - Functions of the Board
+(1) The Board shall:
+    (a) provide free, compulsory basic education to every child of school age;
+    (b) develop infrastructure for basic education institutions;
+    (c) recruit, train, and deploy qualified teaching staff;
+    (d) monitor compliance with basic education standards across Local Government Areas.
+
+Section 6 - Funding
+(1) The Board shall be funded through:
+    (a) annual budgetary allocation from the State Government;
+    (b) contributions from the Universal Basic Education Commission;
+    (c) grants, donations, and other sources approved by the Ministry.
+
+PART III - COMPLIANCE AND ENFORCEMENT
+
+Section 7 - Compulsory Enrolment
+(1) Every parent or guardian resident in the State shall enrol every child under their care in a basic education institution.
+(2) Failure to comply with subsection (1) without reasonable cause is an offence.
+
+Section 8 - Penalties
+(1) A person who contravenes Section 7 is liable on conviction to a fine not exceeding fifty thousand naira or community service as determined by a Magistrate Court.
+
+PART IV - MISCELLANEOUS
+
+Section 9 - Regulations
+The Ministry may make regulations for the effective implementation of this Bill.
+
+Section 10 - Repeal
+The Plateau State Basic Education Law, 2010 is hereby repealed.
