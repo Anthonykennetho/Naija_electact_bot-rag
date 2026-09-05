@@ -147,7 +147,7 @@ def main():
     if not token:
         raise SystemExit(
             "Missing TELEGRAM_BOT_TOKEN. Get one from @BotFather on Telegram, "
-            "then: export TELEGRAM_BOT_TOKEN='your-token-here'"
+            "then add it to .env or your deployment service variables."
         )
 
     try:

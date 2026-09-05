@@ -2,12 +2,11 @@
 LLM answer-generation layer.
 
 Backend is pluggable via the LLM_BACKEND env var:
-    - "groq"   (default) — calls Groq's hosted chat-completions API. The
-                                                 configured project model is groq/compound-mini.
-  - "ollama" — runs an open-source model fully locally via Ollama. Zero
-                         cloud dependency, but needs Ollama installed and
-                         enough local RAM/CPU to run the model comfortably.
-  - "none"   — always uses the plain extractive fallback, no LLM call.
+    - "groq"   (default) — calls Groq's hosted chat-completions API using the
+                                                 model configured by GROQ_MODEL.
+    - "ollama" — runs an open-source model locally via Ollama. It needs Ollama
+                             installed and enough local RAM/CPU.
+    - "none"   — always uses the plain extractive fallback, with no LLM call.
 
 If the selected backend is unreachable or misconfigured, generation falls
 back automatically to a plain extractive answer (top retrieved chunk, no
@@ -15,6 +14,7 @@ paraphrase) so the bot never crashes — it just degrades gracefully.
 """
 
 import os
+import re
 from typing import List, Tuple
 
 import requests
@@ -60,13 +60,24 @@ def build_context(results: List[Tuple[Chunk, float]]) -> str:
     return "\n\n".join(parts)
 
 
-def _extractive_fallback(results: List[Tuple[Chunk, float]], note: str = "") -> str:
+def _extractive_fallback(
+    results: List[Tuple[Chunk, float]],
+    note: str = "",
+    response_language: str = "English",
+) -> str:
     if not results:
         return "I couldn't find anything relevant to that question in the current bill."
     top_chunk, _ = results[0]
     snippet = top_chunk.text.strip().split("\n")[0][:280]
+    snippet = re.sub(r"^\(\d+[A-Za-z]?\)\s*", "", snippet)
     suffix = f"\n\n({note})" if note else ""
-    return f"This section says that {snippet[0].lower() + snippet[1:]}\n\n(Source: {top_chunk.citation()}){suffix}"
+    prefixes = {
+        "Hausa": "Wannan sashe ya bayyana cewa",
+        "Yoruba": "Abala yii sọ pe",
+        "Igbo": "Nkebi a na-ekwu na",
+    }
+    prefix = prefixes.get(response_language, "This section says that")
+    return f"{prefix} {snippet[0].lower() + snippet[1:]}\n\n(Source: {top_chunk.citation()}){suffix}"
 
 
 def _generate_with_groq(question: str, context: str, response_language: str) -> str:
@@ -115,7 +126,7 @@ def generate_answer(
     response_language: str = "English",
 ) -> str:
     if LLM_BACKEND == "none":
-        return _extractive_fallback(results)
+        return _extractive_fallback(results, response_language=response_language)
 
     context = build_context(results)
 
@@ -126,11 +137,13 @@ def generate_answer(
             return _extractive_fallback(
                 results,
                 note="I couldn't reach the full answer service, so I'm quoting the relevant section.",
+                response_language=response_language,
             )
         except Exception:
             return _extractive_fallback(
                 results,
                 note="I couldn't reach the full answer service, so I'm quoting the relevant section.",
+                response_language=response_language,
             )
 
     if LLM_BACKEND == "ollama":
@@ -140,16 +153,19 @@ def generate_answer(
             return _extractive_fallback(
                 results,
                 note="I couldn't reach the full answer service, so I'm quoting the relevant section.",
+                response_language=response_language,
             )
         except Exception:
             return _extractive_fallback(
                 results,
                 note="I couldn't reach the full answer service, so I'm quoting the relevant section.",
+                response_language=response_language,
             )
 
     return _extractive_fallback(
         results,
         note="I couldn't reach the full answer service, so I'm quoting the relevant section.",
+        response_language=response_language,
     )
 
 

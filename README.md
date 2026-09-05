@@ -212,13 +212,10 @@ This repo is ready to push as-is — `.gitignore` already excludes `.env`
 and the generated `index/` folder, so no secrets or build artifacts get
 committed.
 
-```bash
-git init
-git add .
-git commit -m "Legislative Q&A Telegram bot demo"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<repo-name>.git
-git push -u origin main
+The published repository is:
+
+```text
+https://github.com/Anthonykennetho/Naija_electact_bot-rag
 ```
 
 A public GitHub repo alone doesn't make the bot *live*, though — Telegram
@@ -229,8 +226,9 @@ to. To keep it actually running 24/7:
 ### Deploy to Railway (recommended — simplest path)
 
 1. Go to railway.app, sign in with GitHub, click "New Project" → "Deploy from GitHub repo" → select this repo.
-2. Railway auto-detects `Procfile` and runs `start.sh` as a background worker.
-3. In the project's Variables tab, add: `TELEGRAM_BOT_TOKEN`, `LLM_BACKEND=groq`, `GROQ_API_KEY`.
+2. Railway uses `Procfile` to run `bash start.sh` as a background worker.
+3. In the project's Variables tab, add `TELEGRAM_BOT_TOKEN`, `LLM_BACKEND=groq`,
+   `GROQ_API_KEY`, and `GROQ_MODEL=groq/compound-mini`.
 4. Deploy. Check the logs for `"Bot starting (polling...)"` — if you see that with no errors, message your bot on Telegram and it will respond live, running on Railway's servers, not your laptop.
 
 Railway's free tier includes a monthly usage credit, which is normally
