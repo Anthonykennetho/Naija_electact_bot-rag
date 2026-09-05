@@ -16,6 +16,8 @@ from src.retriever import Retriever
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("telegram.request").setLevel(logging.WARNING)
 
 load_dotenv(override=True)
 
