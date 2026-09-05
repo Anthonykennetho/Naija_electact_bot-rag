@@ -54,6 +54,12 @@ def _expand_query(question: str) -> str:
         expansions.extend(("National Register of Voters", "continuous registration", "registration centre", "qualified", "citizen", "18 years", "NIN", "passport", "birth certificate"))
     if any(term in terms for term in ("area council", "local government election", "councillor", "chairman election")):
         expansions.extend(("Area Council", "Chairman", "Vice-Chairman", "Councillor", "Electoral Ward", "nomination", "voting", "election date"))
+    if any(term in terms for term in ("rajistar", "zabe", "masu zaɓe", "katin zaɓe", "zaɓe")):
+        expansions.extend(("voter registration", "National Register of Voters", "registration", "voter card", "qualified", "citizen"))
+    if any(term in terms for term in ("ìdìbò", "idibo", "olùdìbò", "oludibo", "dìbò", "dibo")):
+        expansions.extend(("voter registration", "election", "voting", "voter card", "polling unit"))
+    if any(term in terms for term in ("ntuli aka", "ndebanye", "debanye aha", "onye votu", "ntuli")):
+        expansions.extend(("voter registration", "election", "voting", "voter card", "polling unit"))
     return f"{question} {' '.join(expansions)}".strip()
 
 

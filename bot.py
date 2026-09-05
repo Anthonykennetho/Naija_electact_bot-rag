@@ -29,29 +29,31 @@ retriever = Retriever()
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "👋 Welcome to State Bill Assistant.\n\n"
-        "Ask one clear question about the loaded law in plain language. I will "
-        "search the text and reply with the relevant Part and Section.\n\n"
+        "Ask any clear question about the loaded law in your own words. You do "
+        "not need to know a Section number.\n\n"
         "Try:\n"
         "• How do I register to vote?\n"
         "• How are election results transmitted?\n"
         "• What happens if someone votes more than once?\n\n"
         "Commands:\n"
         "/help - see how to ask questions\n"
-        "/topics - see example topics you can search"
+        "/topics - see example topics you can search\n"
+        "/languages - see supported response languages"
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "How to use me:\n"
-        "1. Type your question normally.\n"
-        "2. Mention the topic or Section if you know it.\n"
-        "3. I will explain the answer in plain language and cite the source.\n\n"
+        "1. Type your question normally; no legal wording is required.\n"
+        "2. Tell me the topic, such as registration, voting, or penalties.\n"
+        "3. I will explain the answer simply and cite the source.\n\n"
         "Examples:\n"
         "• What documents do I need to register?\n"
         "• What is the penalty for double registration?\n"
         "• Who supervises Area Council elections?\n\n"
-        "Use /topics for more examples. Use /start to see the welcome message. "
+        "Use /topics for more examples. Use /languages for language options. "
+        "Use /start to see the welcome message. "
         "This bot provides information "
         "from the loaded law, not personal legal advice."
     )
@@ -76,7 +78,18 @@ async def topics_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• Who supervises Area Council elections?\n"
         "• How is an Area Council Chairman elected?\n"
         "• How can an Area Council member be recalled?\n\n"
-        "Tip: include the topic or Section number in follow-up questions."
+        "Tip: ask in your own words. You do not need to know the Section number."
+    )
+
+
+async def languages_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "You can ask in English, Hausa, Yoruba, or Igbo.\n\n"
+        "I will try to answer in the language you use. You can also say:\n"
+        "• Answer in Hausa\n"
+        "• Answer in Yoruba\n"
+        "• Answer in Igbo\n\n"
+        "Legal names, figures, and Section citations may remain in their original form."
     )
 
 
@@ -121,6 +134,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("topics", topics_command))
+    app.add_handler(CommandHandler("languages", languages_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question))
     app.add_error_handler(error_handler)
 

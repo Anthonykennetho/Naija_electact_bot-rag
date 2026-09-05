@@ -131,8 +131,15 @@ To change the active bill, rerun ingestion before restarting the bot. Only one
 Telegram polling process should run for the configured bot token.
 
 Users can send `/topics` in Telegram for example searches. Follow-up questions
-should repeat the topic or Section number because the current bot does not retain
-conversation history between messages.
+should repeat the topic because the current bot does not retain conversation
+history between messages; Section numbers are optional.
+
+Users do not need to know legal Section numbers. They can ask in ordinary
+English, Hausa, Yoruba, or Igbo and use `/languages` to see examples. Common
+voter and election terms in those languages are mapped to the English legal
+text for retrieval, while the answer model is asked to reply in the user's
+language. Have native speakers review translations before treating responses
+as public legal guidance.
 
 ## Limitations and mitigations
 
