@@ -3,6 +3,8 @@
 A working end-to-end legislative RAG chatbot for making Nigerian legislation
 easier to search and understand through Telegram.
 
+Try the live bot: [t.me/AskTheBillBot](https://t.me/AskTheBillBot)
+
 ## What this demonstrates
 
 | Job requirement | Where it lives |
