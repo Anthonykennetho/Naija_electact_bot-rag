@@ -183,19 +183,11 @@ repo, set it to run `bash start.sh`, add the same three environment
 variables. Render and Fly.io both support this; check each platform's
 current free-tier terms before relying on it for anything beyond a demo.
 
-### What to put in your application
-
-Once deployed, put the GitHub repo link and — if you want extra proof —
-a short screen recording of you messaging the live bot on Telegram in
-your application note. A working bot you can point to and demo live is a
-significantly stronger signal than a repo alone.
 
 ## Known limitations (honest, not hidden)
 
 - TF-IDF retrieval will miss paraphrased questions that don't share
-  vocabulary with the source text — this is a real limitation worth
-  discussing, not a hidden gap. `eval_retrieval.py` is there to make that
-  measurable rather than anecdotal.
+  vocabulary with the source text.
 - The custom stemmer is intentionally naive (suffix-stripping only).
 - `src/tts_stub.py` is an integration stub, not a working TTS pipeline —
   wiring it up needs a real ElevenLabs (or alternative) API key and testing.
