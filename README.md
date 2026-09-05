@@ -135,11 +135,12 @@ should repeat the topic because the current bot does not retain conversation
 history between messages; Section numbers are optional.
 
 Users do not need to know legal Section numbers. They can ask in ordinary
-English, Hausa, Yoruba, or Igbo and use `/languages` to see examples. Common
-voter and election terms in those languages are mapped to the English legal
-text for retrieval, while the answer model is asked to reply in the user's
-language. Have native speakers review translations before treating responses
-as public legal guidance.
+English, Hausa, Yoruba, or Igbo and use `/languages` to select a response
+language with Telegram buttons. Common voter and election terms in those
+languages are mapped to the English legal text for retrieval, while the answer
+model replies in the selected language. The choice lasts for the current bot
+session; persistent preferences would require a database. Have native speakers
+review translations before treating responses as public legal guidance.
 
 ## Limitations and mitigations
 

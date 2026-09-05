@@ -69,7 +69,7 @@ def _extractive_fallback(results: List[Tuple[Chunk, float]], note: str = "") -> 
     return f"This section says that {snippet[0].lower() + snippet[1:]}\n\n(Source: {top_chunk.citation()}){suffix}"
 
 
-def _generate_with_groq(question: str, context: str) -> str:
+def _generate_with_groq(question: str, context: str, response_language: str) -> str:
     if not GROQ_API_KEY:
         raise RuntimeError("GROQ_API_KEY not set")
 
@@ -82,7 +82,10 @@ def _generate_with_groq(question: str, context: str) -> str:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {
                     "role": "user",
-                    "content": f"Legislative excerpts:\n\n{context}\n\nCitizen's question: {question}",
+                    "content": (
+                        f"Preferred response language: {response_language}\n\n"
+                        f"Legislative excerpts:\n\n{context}\n\nCitizen's question: {question}"
+                    ),
                 },
             ],
             "max_tokens": 300,
@@ -95,8 +98,8 @@ def _generate_with_groq(question: str, context: str) -> str:
     return data["choices"][0]["message"]["content"].strip()
 
 
-def _generate_with_ollama(question: str, context: str) -> str:
-    prompt = f"{SYSTEM_PROMPT}\n\nLegislative excerpts:\n\n{context}\n\nCitizen's question: {question}\n\nAnswer:"
+def _generate_with_ollama(question: str, context: str, response_language: str) -> str:
+    prompt = f"{SYSTEM_PROMPT}\n\nPreferred response language: {response_language}\n\nLegislative excerpts:\n\n{context}\n\nCitizen's question: {question}\n\nAnswer:"
     response = requests.post(
         f"{OLLAMA_HOST}/api/generate",
         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
@@ -106,7 +109,11 @@ def _generate_with_ollama(question: str, context: str) -> str:
     return response.json().get("response", "").strip()
 
 
-def generate_answer(question: str, results: List[Tuple[Chunk, float]]) -> str:
+def generate_answer(
+    question: str,
+    results: List[Tuple[Chunk, float]],
+    response_language: str = "English",
+) -> str:
     if LLM_BACKEND == "none":
         return _extractive_fallback(results)
 
@@ -114,7 +121,7 @@ def generate_answer(question: str, results: List[Tuple[Chunk, float]]) -> str:
 
     if LLM_BACKEND == "groq":
         try:
-            return _generate_with_groq(question, context)
+            return _generate_with_groq(question, context, response_language)
         except RuntimeError:
             return _extractive_fallback(
                 results,
@@ -128,7 +135,7 @@ def generate_answer(question: str, results: List[Tuple[Chunk, float]]) -> str:
 
     if LLM_BACKEND == "ollama":
         try:
-            return _generate_with_ollama(question, context)
+            return _generate_with_ollama(question, context, response_language)
         except requests.exceptions.ConnectionError:
             return _extractive_fallback(
                 results,

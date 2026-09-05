@@ -9,8 +9,8 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes, MessageHandler, filters
 
 from src.retriever import Retriever
 
@@ -24,6 +24,22 @@ load_dotenv(override=True)
 MAX_REPLY_CHARS = 800  # keep responses short/cheap for low-bandwidth users
 
 retriever = Retriever()
+user_languages: dict[int, str] = {}
+
+
+def language_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("English", callback_data="language:English"),
+                InlineKeyboardButton("Hausa", callback_data="language:Hausa"),
+            ],
+            [
+                InlineKeyboardButton("Yoruba", callback_data="language:Yoruba"),
+                InlineKeyboardButton("Igbo", callback_data="language:Igbo"),
+            ],
+        ]
+    )
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -38,7 +54,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Commands:\n"
         "/help - see how to ask questions\n"
         "/topics - see example topics you can search\n"
-        "/languages - see supported response languages"
+        "/languages - choose your response language"
     )
 
 
@@ -84,12 +100,20 @@ async def topics_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def languages_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "You can ask in English, Hausa, Yoruba, or Igbo.\n\n"
-        "I will try to answer in the language you use. You can also say:\n"
-        "• Answer in Hausa\n"
-        "• Answer in Yoruba\n"
-        "• Answer in Igbo\n\n"
-        "Legal names, figures, and Section citations may remain in their original form."
+        "Choose the language you want me to use for my replies.\n\n"
+        "This is a language choice, not a declaration of tribe. You can change it "
+        "any time with /languages.",
+        reply_markup=language_keyboard(),
+    )
+
+
+async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    language = query.data.split(":", 1)[1]
+    user_languages[query.from_user.id] = language
+    await query.edit_message_text(
+        f"Your reply language is now {language}. Ask your question in your own words."
     )
 
 
@@ -101,7 +125,8 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     from src.llm import generate_answer  # local import keeps startup fast
 
     results = retriever.query(question, top_k=5)
-    answer = generate_answer(question, results)
+    language = user_languages.get(update.effective_user.id, "English")
+    answer = generate_answer(question, results, response_language=language)
 
     if len(answer) > MAX_REPLY_CHARS:
         answer = answer[:MAX_REPLY_CHARS].rsplit(" ", 1)[0] + "…"
@@ -135,6 +160,7 @@ def main():
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("topics", topics_command))
     app.add_handler(CommandHandler("languages", languages_command))
+    app.add_handler(CallbackQueryHandler(language_callback, pattern=r"^language:"))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question))
     app.add_error_handler(error_handler)
 
